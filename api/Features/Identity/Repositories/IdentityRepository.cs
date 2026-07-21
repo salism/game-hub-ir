@@ -18,9 +18,25 @@ namespace api.Features.Identity.Repositories
             _collection = database.GetCollection<AppUser>("users");
         }
 
-        public async Task CreateAsync(AppUser user)
+        public async Task CreateAsync(AppUser user, CancellationToken cancellationToken)
         {
-            await _collection.InsertOneAsync(user);
+            await _collection.InsertOneAsync(user, options: null, cancellationToken: cancellationToken);
+        }
+
+        public async Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken)
+        {
+            AppUser? appUser = await _collection
+            .Find(doc => doc.Email == email).FirstOrDefaultAsync(cancellationToken);
+
+            return appUser != null;
+        }
+
+        public async Task<bool> ExistsByUsernameAsync(string username, CancellationToken cancellationToken)
+        {
+            AppUser? appUser = await _collection
+            .Find(doc => doc.Username == username).FirstOrDefaultAsync(cancellationToken);
+
+            return appUser != null;
         }
     }
 }

@@ -32,6 +32,8 @@ builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
 builder.Services.AddScoped<IIdentityRepository, IdentityRepository>();
 builder.Services.AddScoped<IIdentityService, IdentityService>();
 
+builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+
 #endregion
 
 #region CORS

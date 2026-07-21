@@ -4,6 +4,6 @@ namespace api.Features.Identity.Services
 {
     public interface IIdentityService
     {
-        Task RegisterAsync(RegisterRequest registerRequest);
+        Task RegisterAsync(RegisterRequest registerRequest, CancellationToken cancellationToken);
     }
 }

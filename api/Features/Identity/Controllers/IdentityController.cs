@@ -16,9 +16,9 @@ namespace api.Features.Identity.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody ] RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody ] RegisterRequest request, CancellationToken cancellationToken)
         {
-            await _service.RegisterAsync(request);
+            await _service.RegisterAsync(request, cancellationToken);
 
             return Ok();
         }
