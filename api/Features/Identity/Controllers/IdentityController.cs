@@ -1,6 +1,7 @@
 using api.Features.Identity.DTOs.Requests;
 using api.Features.Identity.DTOs.Responses;
 using api.Features.Identity.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Features.Identity.Controllers
@@ -28,5 +29,11 @@ namespace api.Features.Identity.Controllers
             return Ok(loginResponse);
         }
 
+        [Authorize]
+        [HttpGet("me")]
+        public IActionResult Me()
+        {
+            return Ok("You are authenticated.");
+        }
     }
 }
