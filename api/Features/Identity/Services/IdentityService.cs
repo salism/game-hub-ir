@@ -1,4 +1,5 @@
 using api.Features.Identity.DTOs.Requests;
+using api.Features.Identity.DTOs.Responses;
 using api.Features.Identity.Models;
 using api.Features.Identity.Repositories;
 
@@ -9,10 +10,13 @@ namespace api.Features.Identity.Services
         private readonly IIdentityRepository _repository;
         private readonly IPasswordHasherService _passwordHasher;
 
-        public IdentityService(IIdentityRepository repository, IPasswordHasherService passwordHasher)
+        private readonly IJwtService _jwtService;
+
+        public IdentityService(IIdentityRepository repository, IPasswordHasherService passwordHasher, IJwtService jwtService)
         {
             _repository = repository;
             _passwordHasher = passwordHasher;
+            _jwtService = jwtService;
         }
         public async Task RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
         {
@@ -40,7 +44,7 @@ namespace api.Features.Identity.Services
             await _repository.CreateAsync(appUser, cancellationToken);
         }
 
-        public async Task LoginAsync(LoginRequest loginRequest, CancellationToken cancellationToken)
+        public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest, CancellationToken cancellationToken)
         {
             AppUser? appUser = await _repository.GetByUsernameOrEmailAsync(loginRequest.UsernameOrEmail, cancellationToken);
             
@@ -61,6 +65,9 @@ namespace api.Features.Identity.Services
                 throw new InvalidOperationException("Account is inactive");
             }
 
+            string accessToken = _jwtService.GenerateAccessToken(appUser);
+
+            return new LoginResponse(accessToken);
         }
     }
 }

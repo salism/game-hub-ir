@@ -1,4 +1,5 @@
 using api.Features.Identity.DTOs.Requests;
+using api.Features.Identity.DTOs.Responses;
 using api.Features.Identity.Validators;
 
 namespace api.Features.Identity.Services
@@ -7,6 +8,6 @@ namespace api.Features.Identity.Services
     {
         Task RegisterAsync(RegisterRequest registerRequest, CancellationToken cancellationToken);
 
-        Task LoginAsync(LoginRequest loginRequest, CancellationToken cancellationToken);
+        Task<LoginResponse> LoginAsync(LoginRequest loginRequest, CancellationToken cancellationToken);
     }
 }

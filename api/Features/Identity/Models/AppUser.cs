@@ -6,7 +6,7 @@ namespace api.Features.Identity.Models
     public class AppUser
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)] string? Id { get; set; } = null!;
+        [BsonRepresentation(BsonType.ObjectId)] public string? Id { get; set; } = null!;
 
         public string Username { get; set; } = null!;
 

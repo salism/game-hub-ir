@@ -1,4 +1,5 @@
 using api.Features.Identity.DTOs.Requests;
+using api.Features.Identity.DTOs.Responses;
 using api.Features.Identity.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,9 +22,10 @@ namespace api.Features.Identity.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest, CancellationToken cancellationToken)
         {
-            await _identityService.LoginAsync(loginRequest, cancellationToken);
+            LoginResponse loginResponse = await _identityService
+            .LoginAsync(loginRequest, cancellationToken);
 
-            return Ok();
+            return Ok(loginResponse);
         }
 
     }
