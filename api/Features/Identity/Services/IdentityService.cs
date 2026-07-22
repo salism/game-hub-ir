@@ -39,5 +39,28 @@ namespace api.Features.Identity.Services
 
             await _repository.CreateAsync(appUser, cancellationToken);
         }
+
+        public async Task LoginAsync(LoginRequest loginRequest, CancellationToken cancellationToken)
+        {
+            AppUser? appUser = await _repository.GetByUsernameOrEmailAsync(loginRequest.UsernameOrEmail, cancellationToken);
+            
+            if (appUser is null)
+            {
+                throw new InvalidOperationException("Invalid credentials");
+            }
+
+            bool isValid = _passwordHasher.Verify(loginRequest.Password, appUser.PasswordHash);
+
+            if (!isValid)
+            {
+                throw new InvalidOperationException("Invalid credentials");
+            }
+
+            if (!appUser.IsActive)
+            {
+                throw new InvalidOperationException("Account is inactive");
+            }
+
+        }
     }
 }

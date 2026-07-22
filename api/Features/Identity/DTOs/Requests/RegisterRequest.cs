@@ -1,6 +1,6 @@
 namespace api.Features.Identity.DTOs.Requests
 {
-    public record RegisterRequest(
+    public sealed record RegisterRequest(
         string Username,
         string Email,
         string Password

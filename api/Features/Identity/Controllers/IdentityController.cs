@@ -6,19 +6,22 @@ namespace api.Features.Identity.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class IdentityController : ControllerBase
+    public class IdentityController(IIdentityService service) : ControllerBase
     {
-        private readonly IIdentityService _service;
-
-        public IdentityController(IIdentityService service)
-        {
-            _service = service;
-        }
+        private readonly IIdentityService _identityService = service;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody ] RegisterRequest request, CancellationToken cancellationToken)
         {
-            await _service.RegisterAsync(request, cancellationToken);
+            await _identityService.RegisterAsync(request, cancellationToken);
+
+            return Ok();
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest, CancellationToken cancellationToken)
+        {
+            await _identityService.LoginAsync(loginRequest, cancellationToken);
 
             return Ok();
         }

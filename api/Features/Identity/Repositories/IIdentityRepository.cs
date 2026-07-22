@@ -9,5 +9,7 @@ namespace api.Features.Identity.Repositories
         Task<bool> ExistsByUsernameAsync(string username, CancellationToken cancellationToken);
 
         Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken);
+
+        Task<AppUser?> GetByUsernameOrEmailAsync(string usernameOrEmail, CancellationToken cancellationToken);
     }
 }

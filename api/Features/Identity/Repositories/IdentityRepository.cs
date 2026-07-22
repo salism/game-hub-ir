@@ -38,5 +38,12 @@ namespace api.Features.Identity.Repositories
 
             return appUser != null;
         }
+
+        public async Task<AppUser?> GetByUsernameOrEmailAsync(string usernameOrEmail, CancellationToken cancellationToken)
+        {
+            return await _collection
+            .Find(doc => doc.Username == usernameOrEmail || doc.Email == usernameOrEmail)
+            .FirstOrDefaultAsync(cancellationToken);
+        }
     }
 }
