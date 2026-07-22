@@ -8,9 +8,10 @@ namespace api.Features.Identity.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class IdentityController(IIdentityService service) : ControllerBase
+    public class IdentityController(IIdentityService service, ICurrentUserService currentUserService) : ControllerBase
     {
         private readonly IIdentityService _identityService = service;
+        private readonly ICurrentUserService _currentUserService = currentUserService;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody ] RegisterRequest request, CancellationToken cancellationToken)
@@ -33,7 +34,10 @@ namespace api.Features.Identity.Controllers
         [HttpGet("me")]
         public IActionResult Me()
         {
-            return Ok("You are authenticated.");
+            return Ok(new CurrentUserResponse(
+                Username: _currentUserService.Username,
+                Email: _currentUserService.Email
+            ));
         }
     }
 }
