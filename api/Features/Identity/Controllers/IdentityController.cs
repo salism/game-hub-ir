@@ -8,10 +8,11 @@ namespace api.Features.Identity.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class IdentityController(IIdentityService service, ICurrentUserService currentUserService) : ControllerBase
+    public class IdentityController(IIdentityService service, ICurrentUserService currentUserService, IEmailConfirmationService emailConfirmationService) : ControllerBase
     {
         private readonly IIdentityService _identityService = service;
         private readonly ICurrentUserService _currentUserService = currentUserService;
+        private readonly IEmailConfirmationService _emailConfirmationService = emailConfirmationService;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody ] RegisterRequest request, CancellationToken cancellationToken)
@@ -31,13 +32,25 @@ namespace api.Features.Identity.Controllers
         }
 
         [Authorize]
-        [HttpGet("me")]
-        public IActionResult Me()
+        [HttpGet("get-user-account")]
+        public IActionResult GetUserAccount()
         {
             return Ok(new CurrentUserResponse(
                 Username: _currentUserService.Username,
                 Email: _currentUserService.Email
             ));
+        }
+
+        [Authorize]
+        [HttpPost("send-confirmation-email")]
+        public async Task<IActionResult> SendConfirmationEmail(
+            CancellationToken cancellationToken
+        )
+        {
+            await _emailConfirmationService
+                .SendConfirmationEmailAsync(cancellationToken);
+
+            return Ok();
         }
     }
 }
