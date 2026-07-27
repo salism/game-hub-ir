@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
+using Resend;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,9 @@ builder.Services.Configure<MongoDbSettings>(
 
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection(nameof(JwtSettings)));
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection(nameof(EmailSettings)));
 
 #endregion
 
@@ -64,16 +68,28 @@ builder.Services
 
 #endregion
 
-#region Application Services
+#region Resend Client
+builder.Services.AddResend(options =>
+{
+    options.ApiToken = builder.Configuration["EmailSettings:ApiKey"]!;
+});
+#endregion
 
+#region Dependency Injection
+
+// Repositories
 builder.Services.AddScoped<IIdentityRepository, IdentityRepository>();
-builder.Services.AddScoped<IIdentityService, IdentityService>();
+builder.Services.AddScoped<IIdentityTokenRepository, IdentityTokenRepository>();
+
+// Infrastructure Services
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
-builder.Services.AddScoped<IIdentityTokenRepository, IdentityTokenRepository>();
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
+
+// Business Services
+builder.Services.AddScoped<IIdentityService, IdentityService>();
+builder.Services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
 
 #endregion
 

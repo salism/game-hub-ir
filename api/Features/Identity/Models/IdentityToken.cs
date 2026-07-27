@@ -8,6 +8,9 @@ public class IdentityToken
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
+    public string? Id { get; set; }
+    
+    [BsonRepresentation(BsonType.ObjectId)]
     public string UserId { get; set; } = null!;
 
     public string Token { get; set; } = null!;

@@ -20,7 +20,7 @@ namespace api.Features.Identity.Services
                 Token = Guid.NewGuid().ToString(),
                 Type = IdentityTokenType.EmailConfirmation,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddHours(24)
+                ExpiresAt = DateTime.UtcNow.AddDays(7)
             };
         }
 
@@ -67,7 +67,13 @@ namespace api.Features.Identity.Services
             await _emailSenderService.SendAsync(
                 user.Email,
                 "Confirm your email",
-                activeToken.Token,
+                $"""
+                <h2>Welcome to Game Hub</h2>
+
+                <p>Your confirmation token is:</p>
+
+                <b>{activeToken.Token}</b>
+                """,
                 cancellationToken);
         }
         

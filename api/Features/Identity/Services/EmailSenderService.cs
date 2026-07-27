@@ -1,35 +1,42 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using api.Settings;
+using Microsoft.Extensions.Options;
+using Resend;
 
 namespace api.Features.Identity.Services
 {
     public class EmailSenderService : IEmailSenderService
     {
-        private readonly ILogger<EmailSenderService> _logger;
+        private readonly IResend _resend;
+        private readonly EmailSettings _emailSettings;
 
-        public EmailSenderService(ILogger<EmailSenderService> logger)
+        public EmailSenderService(IOptions<EmailSettings> emailSettings, IResend resend)
         {
-            _logger = logger;
+            _resend = resend;
+            _emailSettings = emailSettings.Value;
         }
 
-        public Task SendAsync(
+        public async Task SendAsync(
         string to,
         string subject,
         string body,
         CancellationToken cancellationToken)
         {
-            _logger.LogInformation("""
-            ===== EMAIL =====
-            To: {To}
-            Subject: {Subject}
+            EmailMessage email = new()
+            {
+              From = new EmailAddress
+              {
+                  Email = _emailSettings.FromEmail,
+                  DisplayName = _emailSettings.FromName
+              },
 
-            {Body}
-            =================
-            """, to, subject, body);
+              To = to,
 
-            return Task.CompletedTask;
+              Subject = subject,
+
+              HtmlBody = body 
+            };
+
+            await _resend.EmailSendAsync(email, cancellationToken: cancellationToken);
         }
     }
 }
