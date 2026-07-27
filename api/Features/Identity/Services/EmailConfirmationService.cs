@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using api.Features.Identity.Enums;
 using api.Features.Identity.Models;
 using api.Features.Identity.Repositories;
-using Microsoft.Extensions.Configuration.UserSecrets;
+
 
 namespace api.Features.Identity.Services
 {
@@ -14,18 +10,30 @@ namespace api.Features.Identity.Services
         private readonly IIdentityRepository _identityRepository;
         private readonly IIdentityTokenRepository _tokenRepository;
         private readonly ICurrentUserService _currentUserService;
-        private readonly ILogger<EmailConfirmationService> _logger;
+        private readonly IEmailSenderService _emailSenderService;
+
+        private static IdentityToken CreateEmailConfirmationToken(string userId)
+        {
+            return new IdentityToken
+            {
+                UserId = userId,
+                Token = Guid.NewGuid().ToString(),
+                Type = IdentityTokenType.EmailConfirmation,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddHours(24)
+            };
+        }
 
         public EmailConfirmationService(
             IIdentityRepository identityRepository,
             IIdentityTokenRepository tokenRepository,
             ICurrentUserService currentUserService,
-            ILogger<EmailConfirmationService> logger)
+            IEmailSenderService emailSenderService)
         {
             _identityRepository = identityRepository;
             _tokenRepository = tokenRepository;
             _currentUserService = currentUserService;
-            _logger = logger;
+            _emailSenderService = emailSenderService;
         }
 
         public async Task SendConfirmationEmailAsync(CancellationToken cancellationToken)
@@ -38,7 +46,7 @@ namespace api.Features.Identity.Services
                 throw new InvalidOperationException("User is null or email is already confrimed");
             }
 
-            if (user.EmailConfirmed == true)
+            if (user.EmailConfirmed)
             {
                 throw new InvalidOperationException("User is null or email is already confrimed");
             }
@@ -51,21 +59,16 @@ namespace api.Features.Identity.Services
 
             if (activeToken is null)
             {
-                activeToken = new IdentityToken{
-                    UserId = user.Id!,
-                    Token = Guid.NewGuid().ToString(),
-                    CreatedAt = DateTime.UtcNow,
-                    ExpiresAt = DateTime.UtcNow.AddHours(24)
-                };
+                activeToken = CreateEmailConfirmationToken(user.Id!);
 
                 await _tokenRepository.CreateAsync(activeToken, cancellationToken);
             }
 
-            _logger.LogInformation(
-                "Email confirmation token for user {UserId}: {Token}",
-                user.Id,
-                activeToken.Token
-            );
+            await _emailSenderService.SendAsync(
+                user.Email,
+                "Confirm your email",
+                activeToken.Token,
+                cancellationToken);
         }
         
         public Task ConfirmEmailAsync(string token, CancellationToken cancellationToken)

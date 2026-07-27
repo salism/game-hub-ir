@@ -73,6 +73,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
 builder.Services.AddScoped<IIdentityTokenRepository, IdentityTokenRepository>();
+builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 
 #endregion
 
