@@ -8,11 +8,16 @@ namespace api.Features.Identity.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class IdentityController(IIdentityService service, ICurrentUserService currentUserService, IEmailConfirmationService emailConfirmationService) : ControllerBase
+    public class IdentityController(
+        IIdentityService service,
+        ICurrentUserService currentUserService, 
+        IEmailConfirmationService emailConfirmationService,
+        IResetPasswordService resetPasswordService) : ControllerBase
     {
         private readonly IIdentityService _identityService = service;
         private readonly ICurrentUserService _currentUserService = currentUserService;
         private readonly IEmailConfirmationService _emailConfirmationService = emailConfirmationService;
+        private readonly IResetPasswordService _resetPasswordService = resetPasswordService;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody ] RegisterRequest request, CancellationToken cancellationToken)
@@ -62,6 +67,30 @@ namespace api.Features.Identity.Controllers
                 request.Token,
                 cancellationToken);
             
+            return NoContent();
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPasswordAsync(
+            [FromBody] ForgotPasswordRequest forgotPasswordRequest,
+            CancellationToken cancellationToken)
+        {
+            await _resetPasswordService.SendResetPasswordEmailAsync(
+                forgotPasswordRequest.UsernameOrEmail,
+                cancellationToken);
+            
+            return NoContent();
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPasswordAsync(
+            [FromBody] ResetPasswordRequest resetPasswordRequest,
+            CancellationToken cancellationToken)
+        {
+            await _resetPasswordService.ResetPasswordAsync(
+                resetPasswordRequest,
+                cancellationToken);
+
             return NoContent();
         }
     }

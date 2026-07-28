@@ -1,12 +1,15 @@
+using System.Text;
 using api.Features.Identity.Repositories;
 using api.Features.Identity.Services;
+using api.Features.Identity.Validators;
 using api.Settings;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using Resend;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,11 +71,13 @@ builder.Services
 
 #endregion
 
-#region Resend Client
+#region Resend
+
 builder.Services.AddResend(options =>
 {
     options.ApiToken = builder.Configuration["EmailSettings:ApiKey"]!;
 });
+
 #endregion
 
 #region Dependency Injection
@@ -90,6 +95,7 @@ builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 // Business Services
 builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
+builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
 
 #endregion
 
@@ -107,9 +113,16 @@ builder.Services.AddCors(options =>
 
 #endregion
 
-#region MVC
+#region MVC & FluentValidation
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers();
+
+builder.Services
+    .AddFluentValidationAutoValidation();
+
+builder.Services
+    .AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
 #endregion
 
