@@ -52,5 +52,17 @@ namespace api.Features.Identity.Controllers
 
             return Ok();
         }
+
+        [HttpPost("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail(
+            [FromBody] ConfirmEmailRequest request,
+            CancellationToken cancellationToken)
+        {
+            await _emailConfirmationService.ConfirmEmailAsync(
+                request.Token,
+                cancellationToken);
+            
+            return NoContent();
+        }
     }
 }

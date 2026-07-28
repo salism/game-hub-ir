@@ -29,7 +29,9 @@ namespace api.Features.Identity.Repositories
         string token,
         CancellationToken cancellationToken)
         {
-            return await _collection.Find(doc => doc.Token == token).FirstOrDefaultAsync(cancellationToken);
+            return await _collection
+            .Find(doc => doc.Token == token)
+            .FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(
@@ -37,7 +39,10 @@ namespace api.Features.Identity.Repositories
         CancellationToken cancellationToken)
         {
             await _collection
-            .ReplaceOneAsync(doc => doc.UserId == identityToken.UserId, identityToken, cancellationToken: cancellationToken);
+            .ReplaceOneAsync(
+                doc => doc.UserId == identityToken.UserId,
+                identityToken, 
+                cancellationToken: cancellationToken);
         }
 
         public async Task<IdentityToken?> GetActiveTokenAsync(
