@@ -1,5 +1,6 @@
 using api.Features.Identity.DTOs.Requests;
 using api.Features.Identity.DTOs.Responses;
+using api.Features.Identity.Models;
 using api.Features.Identity.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +13,14 @@ namespace api.Features.Identity.Controllers
         IIdentityService service,
         ICurrentUserService currentUserService, 
         IEmailConfirmationService emailConfirmationService,
-        IResetPasswordService resetPasswordService) : ControllerBase
+        IResetPasswordService resetPasswordService,
+        IRefreshTokenService refreshTokenService) : ControllerBase
     {
         private readonly IIdentityService _identityService = service;
         private readonly ICurrentUserService _currentUserService = currentUserService;
         private readonly IEmailConfirmationService _emailConfirmationService = emailConfirmationService;
         private readonly IResetPasswordService _resetPasswordService = resetPasswordService;
+        private readonly IRefreshTokenService _refreshTokenService = refreshTokenService;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody ] RegisterRequest request, CancellationToken cancellationToken)

@@ -89,6 +89,7 @@ builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
 // Business Services
 builder.Services.AddScoped<IIdentityService, IdentityService>();

@@ -9,14 +9,18 @@ namespace api.Features.Identity.Services
     {
         private readonly IIdentityRepository _repository;
         private readonly IPasswordHasherService _passwordHasher;
-
         private readonly IJwtService _jwtService;
+        private readonly IRefreshTokenService _refreshTokenService;
 
-        public IdentityService(IIdentityRepository repository, IPasswordHasherService passwordHasher, IJwtService jwtService)
+        public IdentityService(IIdentityRepository repository, 
+        IPasswordHasherService passwordHasher, 
+        IJwtService jwtService,
+        IRefreshTokenService refreshTokenService)
         {
             _repository = repository;
             _passwordHasher = passwordHasher;
             _jwtService = jwtService;
+            _refreshTokenService = refreshTokenService;
         }
         public async Task RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
         {
@@ -66,8 +70,10 @@ namespace api.Features.Identity.Services
             }
 
             string accessToken = _jwtService.GenerateAccessToken(appUser);
+            string refreshToken = await _refreshTokenService.GenerateAsync(appUser.Id!, cancellationToken: cancellationToken);
 
-            return new LoginResponse(accessToken);
+            return new LoginResponse(accessToken,
+                refreshToken);
         }
     }
 }
