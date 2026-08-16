@@ -13,9 +13,8 @@ using Resend;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHttpContextAccessor();
 
-#region Configuration
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection(nameof(MongoDbSettings)));
@@ -25,8 +24,6 @@ builder.Services.Configure<JwtSettings>(
 
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection(nameof(EmailSettings)));
-
-#endregion
 
 #region MongoDB
 
@@ -85,6 +82,7 @@ builder.Services.AddResend(options =>
 // Repositories
 builder.Services.AddScoped<IIdentityRepository, IdentityRepository>();
 builder.Services.AddScoped<IIdentityTokenRepository, IdentityTokenRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 // Infrastructure Services
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();

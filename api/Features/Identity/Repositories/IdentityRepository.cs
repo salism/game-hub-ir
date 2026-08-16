@@ -15,7 +15,7 @@ namespace api.Features.Identity.Repositories
         {
             var database = client.GetDatabase(dbSettings.DatabaseName);
 
-            _collection = database.GetCollection<AppUser>("users");
+            _collection = database.GetCollection<AppUser>("Users");
         }
 
         public async Task CreateAsync(AppUser user, CancellationToken cancellationToken)
