@@ -101,7 +101,14 @@ namespace api.Features.Identity.Services
 
 
             await _repository.UpdateAsync(
-                Builders<RefreshToken>.Filter.Eq(doc => doc.Token, refreshToken),
+                Builders<RefreshToken>.Filter.And( Builders<RefreshToken>.Filter.Eq(
+                    doc => doc.Token,
+                    refreshToken),
+
+                Builders<RefreshToken>.Filter.Eq(
+                    doc => doc.RevokedAt,
+                    null)),
+                
                 Builders<RefreshToken>.Update.Set(doc => doc.RevokedAt, DateTime.UtcNow),
                 cancellationToken);
             

@@ -69,11 +69,10 @@ namespace api.Features.Identity.Services
                 throw new InvalidOperationException("Account is inactive");
             }
 
-            string accessToken = _jwtService.GenerateAccessToken(appUser);
-            string refreshToken = await _refreshTokenService.GenerateAsync(appUser.Id!, cancellationToken: cancellationToken);
+            string refreshToken = await _refreshTokenService.GenerateAsync(appUser.Id!, cancellationToken);
+            LoginResponse response = await _refreshTokenService.RefreshAsync(refreshToken, cancellationToken);
 
-            return new LoginResponse(accessToken,
-                refreshToken);
+            return response;
         }
     }
 }
